@@ -41,11 +41,14 @@ async function cropFace(inputBuffer, width, height, padding = 0.1) {
   const paddingWidth = box._width * padding;
   const paddingHeight = box._height * padding;
 
+  // Increase top padding to cover more of the head
+  const topPadding = paddingHeight * 2.5;
+
   const extendedBox = {
     left: Math.max(0, Math.round(box._x - paddingWidth / 2)),
-    top: Math.max(0, Math.round(box._y - paddingHeight / 2)),
+    top: Math.max(0, Math.round(box._y - topPadding)),
     width: Math.round(box._width + paddingWidth),
-    height: Math.round(box._height + paddingHeight)
+    height: Math.round(box._height + paddingHeight + topPadding)
   };
 
   // Ensure the box doesn't exceed image dimensions
@@ -61,7 +64,7 @@ async function cropFace(inputBuffer, width, height, padding = 0.1) {
     // Box is wider, adjust height
     const newHeight = extendedBox.width / targetAspectRatio;
     const heightDiff = newHeight - extendedBox.height;
-    extendedBox.top = Math.max(0, Math.round(extendedBox.top - heightDiff / 2));
+    extendedBox.top = Math.max(0, Math.round(extendedBox.top - heightDiff));
     extendedBox.height = Math.round(newHeight);
   } else {
     // Box is taller, adjust width
